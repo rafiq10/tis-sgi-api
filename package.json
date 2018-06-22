@@ -1,0 +1,24 @@
+{
+  "name": "tis-sgi-api",
+  "version": "1.0.0",
+  "description": "Restful API for SGI app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rafiq10/tis-sgi-api.git"
+  },
+  "author": "RBil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rafiq10/tis-sgi-api/issues"
+  },
+  "homepage": "https://github.com/rafiq10/tis-sgi-api#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mssql": "^4.1.0",
+    "nodemon": "^1.17.5"
+  }
+}
