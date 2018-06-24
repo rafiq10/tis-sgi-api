@@ -1,17 +1,12 @@
 var express = require('express');
 var router = express.Router();
+var dbConfig = require('../../../db/dbConfig');
 
 router.get('/partesTrabajoList/:userTF', function (req, res) {
    
   const sql = require("mssql");
 
-   var config = {
-        user: 'Rafal',
-        password: 'Rfl2206',
-        server: 'datacluster', 
-        database: 'SGI_ESP' 
-    };
-    new sql.ConnectionPool(config).connect().then(pool => {
+    new sql.ConnectionPool(dbConfig).connect().then(pool => {
       return pool.request().query("select * from SGI_ESP..Partes_Trabajo as pt where pt.Id_Empleado_partes = '" + req.params.userTF + "'")
       }).then(result => {
         let rows = result.recordset

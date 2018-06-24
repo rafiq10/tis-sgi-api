@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/rafiq10/tis-sgi-api#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
     "mssql": "^4.1.0",
     "nodemon": "^1.17.5"
   }
