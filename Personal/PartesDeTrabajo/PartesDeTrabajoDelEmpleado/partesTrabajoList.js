@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var dbConfig = require('../../../db/dbConfig');
+var verifyToken = require('../../../Auth/VerifyToken');
 
-router.get('/partesTrabajoList/:userTF', function (req, res) {
+router.get('/partesTrabajoList/:userTF', verifyToken, function (req, res, next) {
    
   const sql = require("mssql");
 
