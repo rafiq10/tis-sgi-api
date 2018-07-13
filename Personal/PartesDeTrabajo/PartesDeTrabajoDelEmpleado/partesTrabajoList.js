@@ -8,7 +8,21 @@ router.get('/partesTrabajoList/:userTF', verifyToken, function (req, res, next) 
   const sql = require("mssql");
 
     new sql.ConnectionPool(dbConfig).connect().then(pool => {
-      return pool.request().query("select * from SGI_ESP..Partes_Trabajo as pt where pt.Id_Empleado_partes = '" + req.params.userTF + "'")
+      return pool.request().query(
+                `select 
+                  pt.*,
+                  e.Estado
+                from 
+                  SGI_ESP..Partes_Trabajo as pt 
+                  left join
+                  SGI_ESP..T022_PartesTrabajoEstado as e
+                  on e.IdEstado = pt.EstadoParte
+                  
+                where 
+                  pt.Id_Empleado_partes = '` + req.params.userTF + `' 
+                order by 
+                  Fecha_firma_empleado desc`)
+                  
       }).then(result => {
         let rows = result.recordset
         res.setHeader('Access-Control-Allow-Origin', '*')
