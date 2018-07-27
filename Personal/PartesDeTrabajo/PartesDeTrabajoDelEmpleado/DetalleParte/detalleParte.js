@@ -45,6 +45,37 @@ router.get('/detalleParte/:parteID', verifyToken, function (req, res, next) {
       });
     });
     
+router.get('/lineas-parte/:parteID', verifyToken, function (req, res, next) {
+      const userTF = getUserTF(req.headers['x-access-token']);
+    
+      new sql.ConnectionPool(dbConfig).connect().then(pool => {
+          return pool.request().query(`
+          select * from
+          ` + constants.SGI_DB + `..Lineas_Partes_Trabajo as lp 
+          where Num_parte_trabajo=` + req.params.parteID
+        )
+                      
+          }).then(result => {
+            let rows = result.recordset
+            // console.log(result.rowsAffected[0])
+    
+            if(result.rowsAffected[0]===0){
+              res.setHeader('Access-Control-Allow-Origin', '*')
+              res.status(500).send('no se han encontrado lineas para la parte de trabajo num ' + req.params.parteID);
+              sql.close();
+            }else{
+              res.setHeader('Access-Control-Allow-Origin', '*')
+              res.status(200).json(rows);
+              sql.close();
+            }
+    
+          }).catch(err => {
+            res.status(500).send(err.originalError.message)
+            console.log(err);
+            sql.close();
+          });
+        });
+
 router.post('/detalleParte/:parteID', verifyToken, function (req, res, next) {
   const userTF = getUserTF(req.headers['x-access-token']);
   console.log(req.body.PEP)
