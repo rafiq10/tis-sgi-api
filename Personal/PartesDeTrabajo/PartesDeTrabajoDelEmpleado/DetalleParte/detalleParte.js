@@ -115,7 +115,7 @@ router.post('/detalleParte/:parteID', verifyToken, function (req, res, next) {
     });         
   });
 
-  router.put('/detalleParte/:lineaID', verifyToken, function (req, res, next) {
+  router.put('/lineas-parte/:lineaID', verifyToken, function (req, res, next) {
     const userTF = getUserTF(req.headers['x-access-token']);
     let PEP = ''
     let Hours = ''
@@ -145,34 +145,59 @@ router.post('/detalleParte/:parteID', verifyToken, function (req, res, next) {
     }
     console.log(empComment)
     const SetClause = (PEP + Hours + EstadoLinea + Suffix + empComment)
+    const mySQL =`
+                update ` + dbName + `..Lineas_Partes_Trabajo
+                set ` +
+                  SetClause +
+                  `Coste_total_parte=` + numHours + `*v.Coste_Grupo 
+                from
+                ` + dbName + `..Lineas_Partes_Trabajo as l
+                left join
+                ` + dbName + `..[CA-Empleados] as e 
+                on e.Id_Empleado = '` + userTF + `'
+                left join
+                ` + dbName + `..[Valoracion_Grupo_Coste] as v
+                on v.Id_Grupo_Coste_Va = e.GrupoCoste and  B_Actual = 1
+                where Id_Lin_parte = ` + req.params.lineaID + `
+                `
 
+    console.log(mySQL)
     new sql.ConnectionPool(dbConfig).connect().then(pool => {
-        return pool.request().query(`
-        update ` + dbName + `..Lineas_Partes_Trabajo
-        set ` +
-          SetClause +
-          `Coste_total_parte=` + numHours + `*v.Coste_Grupo 
-        from
-        ` + dbName + `..Lineas_Partes_Trabajo as l
-        left join
-        ` + dbName + `..[CA-Empleados] as e 
-        on e.Id_Empleado = '` + userTF + `'
-        left join
-        ` + dbName + `..[Valoracion_Grupo_Coste] as v
-        on v.Id_Grupo_Coste_Va = e.GrupoCoste and  B_Actual = 1
-        where Id_Lin_parte = ` + req.params.lineaID + `
-        `)
+        return pool.request().query(mySQL)
       }).then(result => {
         let rows = result
         res.setHeader('Access-Control-Allow-Origin', '*')
         res.status(200).send({ affectedRows: result.rowsAffected });
-        sql.close();
+        console.log()
+        sql.close(mySQL);
       }).catch(err => {
         res.status(500).send(err.originalError.message)
         console.log(err);
         sql.close();
       });         
     });
+
+    router.put('/detalleParte/:parteID', verifyToken, function (req, res, next) {
+      const mySQL =`
+                  update ` + dbName + `..Partes_Trabajo
+                  set EstadoParte=` + req.body.EstadoParte +
+                  ` where Id_Parte_Trabajo = ` + req.params.parteID
+  
+      console.log(mySQL)
+      new sql.ConnectionPool(dbConfig).connect().then(pool => {
+          return pool.request().query(mySQL)
+        }).then(result => {
+          let rows = result
+          res.setHeader('Access-Control-Allow-Origin', '*')
+          res.status(200).send({ affectedRows: result.rowsAffected });
+          console.log()
+          sql.close(mySQL);
+        }).catch(err => {
+          res.status(500).send(err.originalError.message)
+          console.log(err);
+          sql.close();
+        });         
+      });
 
 router.delete('/detalleParte/:lineaID', verifyToken, function (req, res, next) {
   const userTF = getUserTF(req.headers['x-access-token']);
