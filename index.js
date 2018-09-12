@@ -6,6 +6,7 @@ const pepsList = require('./General/listaPeps');
 const sufijos = require('./General/sufijos');
 const auth = require('./Auth/AuthController');
 const countries = require('./General/listaPaises');
+const gral = require('./General/isGRAL');
 
 const app = express();
 app.use(express.json());
@@ -17,6 +18,8 @@ app.use('/api/',pepsList);
 app.use('/api/',sufijos);
 app.use('/api/',auth);
 app.use('/api/',countries);
+app.use('/api/',gral);
+
 
 var server = app.listen(5000, function () {
   console.log('Server is running..');

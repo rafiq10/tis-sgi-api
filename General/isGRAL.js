@@ -10,22 +10,17 @@ var dbName = constants.SGI_DB;
 
 var dbName = constants.SGI_DB;
 
-router.get('/projects-list/:TF', verifyToken, function (req, res, next) {
+router.get('/is-gral/:PEP', verifyToken, function (req, res, next) {
   const userTF = getUserTF(req.headers['x-access-token']);
   new sql.ConnectionPool(dbConfig).connect().then(pool => {
       return pool.request().query(`
                                   SELECT
-                                    tbl.pep,
-                                    isnull(tbl.TipoPep,0) as TipoPep,
-                                    (select PepGeneral from ` + dbName + `..[vEmpleados] where Id_Empleado = '` + req.params.TF + `' ) as PepGeneral
+                                    isnull(tbl.TipoPep,0) as TipoPep
                                   from 
                                   ` + dbName + `..[T00-Seguimiento-Operativo] as tbl
-                                  
                                   where 
-                                    not exists (
-                                    select distinct pep from ` + dbName + `..[T00-Seguimiento-Operativo] as seg where 
-                                    (seg.[Ajuste económico] is null or seg.TipoPep=10 or seg.TipoPep=9) 
-                                    and seg.PEP=tbl.PEP) order by tbl.pep`)
+                                    tbl.PEP = '` + req.params.PEP +`'
+                                   `)
                   
       }).then(result => {
         let rows = result.recordset
@@ -33,7 +28,7 @@ router.get('/projects-list/:TF', verifyToken, function (req, res, next) {
 
         if(result.rowsAffected[0]===0){
           res.setHeader('Access-Control-Allow-Origin', '*')
-          res.status(500).send('no se ha encontrado PEPs para usuario ' + req.params.TF);
+          res.status(500).send('no se ha encontrado PEP num ' + req.params.PEP );
           sql.close();
         }else{
           res.setHeader('Access-Control-Allow-Origin', '*')
