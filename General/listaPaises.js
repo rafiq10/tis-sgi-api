@@ -7,8 +7,8 @@ const sql = require('mssql');
 var constants = require('../constants');
 
 
-router.get('/countries-list/', verifyToken, function (req, res, next) {
-  const userTF = getUserTF(req.headers['x-access-token']);
+router.get('/countries-list/', function (req, res, next) {
+  
   new sql.ConnectionPool(dbConfig).connect().then(pool => {
       return pool.request().query(`
                                   select 

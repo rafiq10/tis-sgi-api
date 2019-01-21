@@ -7,6 +7,8 @@ const sufijos = require('./General/sufijos');
 const auth = require('./Auth/AuthController');
 const countries = require('./General/listaPaises');
 const gral = require('./General/isGRAL');
+const fs = require('fs')
+const https = require('https')
 
 const app = express();
 app.use(express.json());
@@ -21,6 +23,11 @@ app.use('/api/',countries);
 app.use('/api/',gral);
 
 
-var server = app.listen(5000, function () {
-  console.log('Server is running..');
-});
+https.createServer({
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.cert'),
+  requestCert: true,
+  rejectUnauthorized: false,
+},app).listen(5000,function(){
+  console.log('Server is running ...')
+})

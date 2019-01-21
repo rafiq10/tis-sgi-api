@@ -11,6 +11,7 @@ const getPwd = (user) => {
     new sql.ConnectionPool(dbConfig).connect().then(pool => {
       return pool.request().query("select * from " + dbName + "..vEmpleados where Id_Empleado = '" + user + "'")
       }).then(result => {
+        console.log(result)
         resolve([result.recordset[0].Password,result.recordset[0].Nombre])
       })
       .catch(err =>{

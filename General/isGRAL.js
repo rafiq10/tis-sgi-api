@@ -8,8 +8,6 @@ const jwt = require('jsonwebtoken');
 var constants = require('../constants');
 var dbName = constants.SGI_DB;
 
-var dbName = constants.SGI_DB;
-
 router.get('/is-gral/:PEP', verifyToken, function (req, res, next) {
   const userTF = getUserTF(req.headers['x-access-token']);
   new sql.ConnectionPool(dbConfig).connect().then(pool => {
